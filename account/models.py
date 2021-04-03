@@ -4,7 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Custom account manager for custom user model.
 class AccountManager(BaseUserManager):
-    def create_user(self, name,phone_number, gender, city, password = None):
+    def create_user(self, name,phone_number, gender, city, profile_pic, password = None):
         if not name:
             raise ValueError('Name is required')
         if not phone_number:
@@ -22,16 +22,18 @@ class AccountManager(BaseUserManager):
             phone_number=phone_number,
             gender= gender,
             city=city,
+            profile_pic=profile_pic
 		)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, name, phone_number, gender, city, password):
+    def create_superuser(self, name, phone_number, gender,profile_pic, city, password):
         user = self.create_user(
             # email=self.normalize_email(email),
             phone_number=phone_number,
             name=name,
+            profile_pic=profile_pic,
             gender=gender,
             city=city,
             password=password,
