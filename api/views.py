@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework import generics, permissions 
 from knox.views import LoginView as KnoxLoginView
+import json
 
 
 
@@ -42,7 +43,15 @@ class UpdateProfileView(generics.UpdateAPIView):
             self.object.city = serializer.data.get('city')
             self.object.profile_pic = serializer.data.get('profile_pic')
             self.object.save()
-            return Response("Success") 
+
+            user = {
+                'name':self.object.name ,
+                'phone_number': serializer.data.get('phone_number'),
+                'gender': self.object.gender,
+                'city': self.object.city,
+                'profile_pic': serializer.data.get('profile_pic') 
+            }
+            return Response(json.dumps(user))
         return Response("Error") 
 
     # def update(self, request, *args, **kwargs):
