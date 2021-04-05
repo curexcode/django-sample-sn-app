@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'account',
     'api',
+    'knox',
     'phonenumber_field',
     'rest_framework',
     'django.contrib.admin',

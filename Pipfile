@@ -9,6 +9,7 @@ pillow = "*"
 phonenumbers = "*"
 django = "*"
 django-phonenumber-field = {extras = ["phonenumbers"], version = "*"}
+django-rest-knox = "*"
 
 [dev-packages]
 
