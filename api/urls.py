@@ -6,6 +6,9 @@ from . import views
 urlpatterns = [
     path('users', views.api_overview),
     path('user/register/', views.RegisterAPI.as_view()),
+    # path('user/1/changepassword', views.),
+    path('user/login/', views.LoginAPI.as_view()),
+    path('user/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
     # path('', views.apiOverview),
     # path('register/', views.RegisterAPI.as_view(), name='register'),
     # path('login/', views.LoginAPI.as_view(), name='login'),

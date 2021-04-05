@@ -8,6 +8,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = Account 
         fields = ('id', 'name', 'phone_number', 'gender', 'city', 'profile_pic','verified')
 
+class ChangePasswordSerializer(serializers.Serializer):
+    # class Meta:
+    #     model = Account 
+    #     fields = ('password')
+    model = Account
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Account 
