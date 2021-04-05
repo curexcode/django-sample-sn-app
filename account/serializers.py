@@ -16,6 +16,15 @@ class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
 
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = Account 
+        fields = ('name', 'phone_number', 'gender', 'city', 'profile_pic')
+        # extra_kwargs = {'password': {'write_only': True}}
+    
+  
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Account 

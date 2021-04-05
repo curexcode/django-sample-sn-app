@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from knox import views as knox_views
 
 
 urlpatterns = [
@@ -8,7 +9,11 @@ urlpatterns = [
     path('user/register/', views.RegisterAPI.as_view()),
     # path('user/1/changepassword', views.),
     path('user/login/', views.LoginAPI.as_view()),
-    path('user/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    path('user/update-profile/', views.UpdateProfileView.as_view(), name='update-profile'),
+    path('user/password-reset/', views.ChangePasswordView.as_view(), name='password-reset'),
+    path('user/logout/', knox_views.LogoutView.as_view(), name='logout'),
+    path('user/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
+    # path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall')
     # path('', views.apiOverview),
     # path('register/', views.RegisterAPI.as_view(), name='register'),
     # path('login/', views.LoginAPI.as_view(), name='login'),

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import login
-from account.serializers import UserSerializer,RegisterSerializer, ChangePasswordSerializer
+from account.serializers import UserSerializer,RegisterSerializer, ChangePasswordSerializer, UpdateProfileSerializer
 from account.models import Account
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework.response import Response
@@ -22,9 +22,8 @@ def api_overview(req):
     return Response(serializer.data)
 
 
-
-class ChangePasswordView(generics.UpdateAPIView):
-    serializer_class = ChangePasswordSerializer
+class UpdateProfileView(generics.UpdateAPIView):
+    serializer_class = UpdateProfileSerializer
     model = Account
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -36,9 +35,52 @@ class ChangePasswordView(generics.UpdateAPIView):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            # import pdb; pdb.set_trace()
+            self.object.name = serializer.data.get('name')
+            self.object.phone_number = serializer.data.get('phone_number')
+            self.object.gender = serializer.data.get('gender')
+            self.object.city = serializer.data.get('city')
+            self.object.profile_pic = serializer.data.get('profile_pic')
+            self.object.save()
+            return Response("Success") 
+        return Response("Error") 
+
+    # def update(self, request, *args, **kwargs):
+    #     #self.object is user object
+    #     self.object = self.get_object()
+    #     serializer = self.get_serializer(data=request.data)
+    #     if serializer.is_valid():
+    #         if not self.object.check_password(serializer.data.get("old_password")):
+    #             return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+    #         self.object.set_password(serializer.data.get("new_password"))
+    #         self.object.save()
+    #         response = {
+    #             'status': 'success',
+    #             'code': status.HTTP_200_OK,
+    #             'message': 'Password updated successfully',
+    #             'data': []
+    #         }
+
+    #         return Response(response)
+
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = Account
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+    
+    def update(self, request, *args, **kwargs):
+        #self.object is user object
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
             if not self.object.check_password(serializer.data.get("old_password")):
                 return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
-            # set_password also hashes the password that the user will get
             self.object.set_password(serializer.data.get("new_password"))
             self.object.save()
             response = {
@@ -51,11 +93,6 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
