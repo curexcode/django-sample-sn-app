@@ -2,6 +2,27 @@ from django.db import models
 from account.models import Account
 
 
+class Post(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    image = models.ImageField(null = True, blank = True, upload_to='images/')
+    text = models.CharField(max_length=512)
+    public = models.BooleanField(default = True)
+    likes = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.text) + ' | ' + str(self.user)
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    image = models.ImageField(null = True, blank = True, upload_to='images/')
+    text = models.CharField(max_length=512)
+    likes = models.PositiveIntegerField()
+
+    def __str__(self):
+        return str(self.text) + ' | ' + str(self.post)
+
 class Connection (models.Model):
     user = models.ManyToManyField(Account) 
     current_user = models.ForeignKey(Account, related_name='owner', null=True, on_delete=models.CASCADE)
