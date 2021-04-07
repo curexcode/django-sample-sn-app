@@ -31,13 +31,18 @@ class PendingConnection(models.Model):
     @classmethod
     def approve_request(cls, sender, receiver):
         try:
+            # Check if any pending request exist between sender and receiver.
             pending_list = cls.get_pending_requests(receiver)
-            pc_obj = pending_list.filter(sender=sender)[0]
-            return pc_obj
+            sender_from_pending_list = pending_list.filter(sender=sender)[0]
+            Connection.add_friend(sender, receiver)
+            # Delete pending request after approving request
+            sender_from_pending_list.delete()
         except:
             print('There is no pending request from user ID: {0} to {1}'.format(sender, receiver))
             return 'There is no pending request from user ID: {0} to {1}'.format(sender, receiver)
-        
+
+        # If everything goes well then add each other to their respective friends list.
+        # Need to implement remove from pending request when friend connection is established
         # connection, created = cls.objects.get_or_create(from=)
 
     @classmethod
@@ -78,10 +83,16 @@ class Connection (models.Model):
         connection.user.add(current_user)
 
     @classmethod
-    def remove_friend(cls, current_user, old_connection):
-        current_user_id = Account.objects.get(pk=current_user)
-        connection, created = cls.objects.get_or_create(current_user=current_user_id)
-        connection.user.remove(old_connection)
+    def remove_friend(cls, current_user_id, old_connection_id):
+        current_user = Account.objects.get(pk=current_user_id)
+        connection, created = cls.objects.get_or_create(current_user=current_user)
+        connection.user.remove(old_connection_id)
+        # Also remove current user from removed friends list
+        old_connection = Account.objects.get(pk=old_connection_id)
+        connection, created = cls.objects.get_or_create(current_user=old_connection)
+        connection.user.remove(current_user_id)
+
+
 
     @classmethod    
     def get_friends(cls, current_user):
