@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'account',
     'api',
     'knox',
+    'feed',
     'phonenumber_field',
     'rest_framework',
     'django.contrib.admin',
