@@ -28,9 +28,37 @@ class PendingConnection(models.Model):
     sender = models.PositiveIntegerField()
     receiver = models.ForeignKey(Account, related_name="receiver", null=False, on_delete=models.CASCADE)
 
-    # @classmethod
-    # def add_pending(cls, from, to):
-    #     connection, created = cls.objects.get_or_create(from=)
+    @classmethod
+    def approve_request(cls, sender, receiver):
+        try:
+            pending_list = cls.get_pending_requests(receiver)
+            pc_obj = pending_list.filter(sender=sender)[0]
+            return pc_obj
+        except:
+            print('There is no pending request from user ID: {0} to {1}'.format(sender, receiver))
+            return 'There is no pending request from user ID: {0} to {1}'.format(sender, receiver)
+        
+        # connection, created = cls.objects.get_or_create(from=)
+
+    @classmethod
+    def cancel_request(cls, sender, receiver):
+        pass
+
+    @classmethod
+    def get_pending_requests(cls, user_id):
+        return cls.objects.filter(receiver=Account.objects.get(pk=user_id))
+
+    @classmethod
+    # Use this to add pending requests to avoid duplicate pending request.
+    def add_pending_request(cls, sender, receiver):
+        try:
+            pending_list = cls.get_pending_requests(receiver)
+            pc_obj = pending_list.filter(sender=sender)[0]
+            return 'Pending request from {0} to {1} already exists'.format(sender, receiver)
+        except:
+            receiver_ac = Account.objects.get(pk=receiver)
+            cls.objects.create(sender=sender, receiver=receiver_ac)
+
 
 
 
