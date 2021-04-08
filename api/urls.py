@@ -17,8 +17,12 @@ urlpatterns = [
     path('user/<int:user_id>/', views.get_profile, name='get_profile'),
 
     # Friend request related APIs
+    path('friends/<int:user_id>', views.get_friends, name='get_friends' ),
+    path('pending-requests', views.get_pending_requests, name='get_pending_requests' ),
     path('add-friend/<int:user_id>', views.add_friend, name='add_friend'),
-    # path('friends/<int:user_id', views.get_friends, name='get_friends' )
+    path('remove-friend/<int:user_id>', views.remove_friend, name='remove_friend' ),
+    path('approve-request/<int:user_id>', views.approve_request, name='approve_request' ),
+    # path('search/<string:name>', views.search_friend , name='search_friend' ),
 
     # Feed post related APIs.
     path('user/<int:user_id>/feed/', views.get_feed, name='get_feed'),

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login
 from account.serializers import UserSerializer,RegisterSerializer, ChangePasswordSerializer, UpdateProfileSerializer
-from feed.serializers import PostSerializer, CommentSerializer 
+from feed.serializers import PostSerializer, CommentSerializer, PendingConnectionSerializer
 from account.models import Account
 from rest_framework.renderers import JSONRenderer, MultiPartRenderer
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework import generics, permissions 
 from knox.views import LoginView as KnoxLoginView
-from feed.models import PendingConnection, Post, Comment 
+from feed.models import PendingConnection, Connection, Post, Comment
 import json
 
 
@@ -25,13 +25,37 @@ def api_overview(req):
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
 
-@api_view(['POST'])
+@api_view(['GET'])
 def add_friend(req, user_id):
     # current_user_id = 
-    PendingConnection.add_pending_request(1, 4)
-    PendingConnection.approve_request(1, 4)
+    pc_obj = PendingConnection.add_pending_request(3, 1)
+    serializer = PendingConnectionSerializer(pc_obj, many=False)
+    return Response(serializer.data)
 
-    return Response('Send friend request using this API')
+@api_view(['GET'])
+def approve_request(req, user_id):
+    try:
+        pc_obj = PendingConnection.approve_request(3,1)         #user_id, req.user.id)
+        serializer = PendingConnectionSerializer(pc_obj, many=False)
+        return Response(serializer.data)
+    except:
+        return JsonResponse({'Error': 'Error approving friend request'})
+    # return JsonResponse({'Success': 'Friend request accepted of user Id : {0}'.format(user_id))
+
+@api_view(['GET'])
+def remove_friend(req, user_id):
+    Connection.remove_friend(1, user_id)
+    accounts = Connection.get_friends(1)
+    serializer = UserSerializer(accounts, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_pending_requests(req):
+    pc_obj = PendingConnection.get_pending_requests(4)
+    serializer = PendingConnectionSerializer(pc_obj, many=True)
+    return Response(serializer.data)
+
 
 #Get profile of a specific user
 @api_view(['GET'])
@@ -43,6 +67,16 @@ def get_profile(req, user_id):
         return JsonResponse({'Error': 'There is no user with user ID {0}'.format(user_id)})
 
     serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_friends(req, user_id):
+    try:
+        accounts = Connection.get_friends(user_id)
+    except:
+        return JsonResponse({'Error': "You don't have any friends yet."})
+
+    serializer = UserSerializer(accounts, many=True)
     return Response(serializer.data)
 
 @api_view(['GET']) 

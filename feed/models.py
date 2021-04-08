@@ -1,5 +1,6 @@
 from django.db import models
 from account.models import Account
+import copy
 
 
 class Post(models.Model):
@@ -36,7 +37,10 @@ class PendingConnection(models.Model):
             sender_from_pending_list = pending_list.filter(sender=sender)[0]
             Connection.add_friend(sender, receiver)
             # Delete pending request after approving request
+            obj_copy = copy.deepcopy(sender_from_pending_list)
             sender_from_pending_list.delete()
+            # import pdb; pdb.set_trace()
+            return obj_copy
         except:
             print('There is no pending request from user ID: {0} to {1}'.format(sender, receiver))
             return 'There is no pending request from user ID: {0} to {1}'.format(sender, receiver)
@@ -59,10 +63,11 @@ class PendingConnection(models.Model):
         try:
             pending_list = cls.get_pending_requests(receiver)
             pc_obj = pending_list.filter(sender=sender)[0]
-            return 'Pending request from {0} to {1} already exists'.format(sender, receiver)
+            print('Pending request from {0} to {1} already exists'.format(sender, receiver))
+            return pc_obj
         except:
             receiver_ac = Account.objects.get(pk=receiver)
-            cls.objects.create(sender=sender, receiver=receiver_ac)
+            return cls.objects.create(sender=sender, receiver=receiver_ac)
 
 
 
