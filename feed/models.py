@@ -8,14 +8,14 @@ class Post(models.Model):
     image = models.ImageField(null = True, blank = True, upload_to='images/')
     text = models.CharField(max_length=512)
     public = models.BooleanField(default = True)
-    likes = models.PositiveIntegerField()
+    likes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return str(self.text) + ' | ' + str(self.user)
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.OneToOneField(Account, null=True, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post")
+    user = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="user")
     date = models.DateField(auto_now_add=True)
     image = models.ImageField(null = True, blank = True, upload_to='images/')
     text = models.CharField(max_length=512)

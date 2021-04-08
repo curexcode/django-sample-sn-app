@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework import generics, permissions 
 from knox.views import LoginView as KnoxLoginView
+from feed.models import PendingConnection
 import json
 
 
@@ -21,6 +22,15 @@ def api_overview(req):
     users = Account.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def add_friend(req, user_id):
+    # current_user_id = 
+    PendingConnection.add_pending_request(1, 4)
+    PendingConnection.approve_request(1, 4)
+
+    return Response('Send friend request using this API')
+
 
 
 class UpdateProfileView(generics.UpdateAPIView):

@@ -13,6 +13,7 @@ urlpatterns = [
     path('user/password-reset/', views.ChangePasswordView.as_view(), name='password-reset'),
     path('user/logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('user/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
+    path('add-friend/<int:user_id>', views.add_friend, name='add_friend'),
     # path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall')
     # path('', views.apiOverview),
     # path('register/', views.RegisterAPI.as_view(), name='register'),
