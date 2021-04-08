@@ -8,6 +8,16 @@ class PendingConnectionSerializer(serializers.ModelSerializer):
         model = PendingConnection
         fields = ('sender', 'receiver')
     
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ('user', 'date', 'image', 'text', 'public', 'likes')
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment 
+        fields = ('post', 'user', 'date', 'image', 'text', 'likes')
+
 
 
 # class UserSerializer(serializers.ModelSerializer):

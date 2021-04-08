@@ -5,6 +5,7 @@ from knox import views as knox_views
 
 
 urlpatterns = [
+    # Auth related APIs
     path('users', views.api_overview),
     path('user/register/', views.RegisterAPI.as_view()),
     # path('user/1/changepassword', views.),
@@ -13,7 +14,22 @@ urlpatterns = [
     path('user/password-reset/', views.ChangePasswordView.as_view(), name='password-reset'),
     path('user/logout/', knox_views.LogoutView.as_view(), name='logout'),
     path('user/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
+    path('user/<int:user_id>/', views.get_profile, name='get_profile'),
+
+    # Friend request related APIs
     path('add-friend/<int:user_id>', views.add_friend, name='add_friend'),
+    # path('friends/<int:user_id', views.get_friends, name='get_friends' )
+
+    # Feed post related APIs.
+    path('user/<int:user_id>/feed/', views.get_feed, name='get_feed'),
+    path('user/feed/', views.current_user_feed, name='current_user_feed'),
+    path('post/newpost/', views.NewPostAPI.as_view(), name='add_new_post'),
+    path('post/<int:id>/comment/', views.NewCommentAPI.as_view(), name='add_new_post'),
+
+
+]
+
+
     # path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall')
     # path('', views.apiOverview),
     # path('register/', views.RegisterAPI.as_view(), name='register'),
@@ -21,4 +37,3 @@ urlpatterns = [
     # path('logout/', knox_views.LogoutView.as_view(), name='logout'),
     # path('logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall')
     # path('task-delete/', views.taskDelete),
-]

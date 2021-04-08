@@ -1,15 +1,17 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login
 from account.serializers import UserSerializer,RegisterSerializer, ChangePasswordSerializer, UpdateProfileSerializer
+from feed.serializers import PostSerializer, CommentSerializer 
 from account.models import Account
+from rest_framework.renderers import JSONRenderer, MultiPartRenderer
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework import generics, permissions 
 from knox.views import LoginView as KnoxLoginView
-from feed.models import PendingConnection
+from feed.models import PendingConnection, Post, Comment 
 import json
 
 
@@ -31,7 +33,68 @@ def add_friend(req, user_id):
 
     return Response('Send friend request using this API')
 
+#Get profile of a specific user
+@api_view(['GET'])
+# @renderer_classes([JSONRenderer])
+def get_profile(req, user_id):
+    try:
+        user = Account.objects.get(pk=user_id)
+    except:
+        return JsonResponse({'Error': 'There is no user with user ID {0}'.format(user_id)})
 
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+@api_view(['GET']) 
+def get_feed(req, user_id):
+    try:
+        all_posts = Post.objects.filter(user=Account.objects.get(pk=user_id))
+    except:
+        return JsonResponse({"Error": "No post found from user ID {0}".format(user_id)})
+    posts = PostSerializer(all_posts, many=True)
+    return Response(posts.data)
+
+# @renderer_classes([MultiPartRenderer])
+# @api_view(['POST'])
+# def add_new_post(req):
+#     serializer = PostSerializer(data=req.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NewPostAPI(generics.GenericAPIView):
+    serializer_class = PostSerializer 
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.save()
+        return Response({
+        "Post": PostSerializer(data, context=self.get_serializer_context()).data,
+        })
+
+class NewCommentAPI(generics.GenericAPIView):
+    serializer_class = CommentSerializer 
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.save()
+        return Response({
+        "Comment": CommentSerializer(data, context=self.get_serializer_context()).data,
+        })
+
+
+
+@api_view(['GET']) 
+def current_user_feed(req):
+    try:
+        all_posts = Post.objects.filter(user=Account.objects.get(pk=req.user.id))
+    except:
+        return JsonResponse({"Error": "No post found from you"})
+    posts = PostSerializer(all_posts, many=True)
+    return Response(posts.data)
 
 class UpdateProfileView(generics.UpdateAPIView):
     serializer_class = UpdateProfileSerializer
