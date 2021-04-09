@@ -52,11 +52,12 @@ def remove_friend(req, user_id):
 @api_view(['GET'])
 def search_friend(req, gender, city, search_str):
 
-    if gender == 'any' and city == 'any':
+    if gender == 'any' and city== 'any':
         users = Account.objects.all()
     elif gender in ['male', 'female']:
         users = Account.objects.filter(gender=gender)
-        users = Account.objects.filter(city=city)
+        if city != 'any':               # If city is any then we will consider it as search by gender
+            users = Account.objects.filter(city=city)
     else:
         return JsonResponse({'Error': 'Gender params invalid.'})
     
