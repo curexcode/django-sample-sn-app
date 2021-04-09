@@ -49,6 +49,26 @@ def remove_friend(req, user_id):
     serializer = UserSerializer(accounts, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def search_friend(req, gender, city, search_str):
+
+    if gender == 'any' and city == 'any':
+        users = Account.objects.all()
+    elif gender in ['male', 'female']:
+        users = Account.objects.filter(gender=gender)
+        users = Account.objects.filter(city=city)
+    else:
+        return JsonResponse({'Error': 'Gender params invalid.'})
+    
+    filtered_users = users.filter(name=search_str)
+    if not filtered_users:
+        phone_num = '+' + search_str
+        filtered_users = users.filter(phone_number=phone_num)
+
+    serializer = UserSerializer(filtered_users, many=True)
+    # return JsonResponse({'search_str': search_str, 'filter': filter, 'filter_param':filter_param})
+
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def get_pending_requests(req):

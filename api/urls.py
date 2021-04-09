@@ -22,7 +22,8 @@ urlpatterns = [
     path('add-friend/<int:user_id>', views.add_friend, name='add_friend'),
     path('remove-friend/<int:user_id>', views.remove_friend, name='remove_friend' ),
     path('approve-request/<int:user_id>', views.approve_request, name='approve_request' ),
-    # path('search/<string:name>', views.search_friend , name='search_friend' ),
+    # Filter can be either gender or city param can be either name or phone number
+    path('friends/search/<str:gender>/<str:city>/<str:search_str>', views.search_friend , name='search_friend' ),
 
     # Feed post related APIs.
     path('user/<int:user_id>/feed/', views.get_feed, name='get_feed'),
