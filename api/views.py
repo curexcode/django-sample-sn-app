@@ -144,6 +144,24 @@ def get_comments(req, post_id):
     serializer = CommentSerializer(comments, many=True)
     return Response(serializer.data)
 
+@api_view(['PATCH'])
+def like_post(req, post_id):
+    post = Post.objects.get(pk=post_id)
+    post.likes += 1
+    post.save()
+    # import pdb; pdb.set_trace()
+    serializer = PostSerializer(post, many=False)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+def like_comment(req, comment_id):
+    comment = Comment.objects.get(pk=comment_id)
+    comment.likes += 1
+    comment.save()
+    # import pdb; pdb.set_trace()
+    serializer = CommentSerializer(comment , many=False)
+    return Response(serializer.data)
+
 @api_view(['GET']) 
 def current_user_feed(req):
     try:
