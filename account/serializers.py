@@ -21,9 +21,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         model = Account 
         fields = ('name', 'phone_number', 'gender', 'city', 'profile_pic')
         # extra_kwargs = {'password': {'write_only': True}}
-    
-  
-
+        
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta: 

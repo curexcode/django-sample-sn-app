@@ -2,7 +2,6 @@ from django.db import models
 from account.models import Account
 import copy
 
-
 class Post(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)

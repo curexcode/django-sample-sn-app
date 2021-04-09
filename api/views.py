@@ -14,8 +14,6 @@ from knox.views import LoginView as KnoxLoginView
 from feed.models import PendingConnection, Connection, Post, Comment
 import json
 
-
-
 # class UserSerializer(serializers.ModelSerializer):
 
 
@@ -28,14 +26,14 @@ def api_overview(req):
 @api_view(['GET'])
 def add_friend(req, user_id):
     # current_user_id = 
-    pc_obj = PendingConnection.add_pending_request(3, 1)
+    pc_obj = PendingConnection.add_pending_request(6, user_id)
     serializer = PendingConnectionSerializer(pc_obj, many=False)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def approve_request(req, user_id):
     try:
-        pc_obj = PendingConnection.approve_request(3,1)         #user_id, req.user.id)
+        pc_obj = PendingConnection.approve_request(user_id,5)         #user_id, req.user.id)
         serializer = PendingConnectionSerializer(pc_obj, many=False)
         return Response(serializer.data)
     except:
@@ -44,8 +42,8 @@ def approve_request(req, user_id):
 
 @api_view(['GET'])
 def remove_friend(req, user_id):
-    Connection.remove_friend(1, user_id)
-    accounts = Connection.get_friends(1)
+    Connection.remove_friend(5, user_id)
+    accounts = Connection.get_friends(1)        # replace this with req.user.id
     serializer = UserSerializer(accounts, many=True)
     return Response(serializer.data)
 
@@ -140,7 +138,11 @@ class NewCommentAPI(generics.GenericAPIView):
         "Comment": CommentSerializer(data, context=self.get_serializer_context()).data,
         })
 
-
+@api_view(['GET'])
+def get_comments(req, post_id):
+    comments = Comment.objects.filter(post=post_id)
+    serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET']) 
 def current_user_feed(req):
